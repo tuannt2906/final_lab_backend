@@ -20,20 +20,27 @@ export class UsersService {
   }
   async create(createUserDto: CreateUserDto) {
     const {name, email, password, phone, address, image} = createUserDto;
-    //CheckEmail
+    // CheckEmail
     const isExist = await this.isEmailExist(email);
-    if(isExist) {
-      throw new BadRequestException(`Email ${email} is existed!`);
+    if (isExist) {
+        throw new BadRequestException(`Email ${email} is already existed!`);
     }
     // HashPassword
-    const hashPass = await HashPass(createUserDto.password);
+    const hashPass = await HashPass(password);
+    // Create User
     const user = await this.userModel.create({
-      name, email, password: hashPass, phone, address, image
-    })
+        name,
+        email,
+        password: hashPass,  // Sửa lỗi chính tả từ `hassPass` thành `hashPass`
+        phone,
+        address,
+        image,
+    });
     return {
-      _id: user._id,
-    }
-  }
+        _id: user._id,
+    };
+}
+
 
   async findAll(query: string, current: number, pageSize: number) {
     const {filter, sort} = aqp(query);
@@ -57,6 +64,10 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
+  async findByEmail (email: string) {
+    return await this.userModel.findOne({ email })
+  }
+
   async update(updateUserDto: UpdateUserDto) {
     return await this.userModel.updateOne(
       {_id: updateUserDto._id}, {...updateUserDto});
@@ -65,7 +76,7 @@ export class UsersService {
   async remove(_id: string) {
     // CheckID
     if(mongoose.isValidObjectId(_id)){
-      return this.userModel.deleteOne({_id})
+      return this.userModel.deleteOne({ _id })
     } else {
       throw new BadRequestException("Id is invalid!")
     }
