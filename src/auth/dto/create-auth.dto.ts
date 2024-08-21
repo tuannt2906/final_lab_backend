@@ -10,7 +10,6 @@ import {
 export class CreateAuthDto {
   @IsOptional()
   name: string;
-  
   @IsNotEmpty()
   @IsEmail({}, { message: 'Invalid email format!' })
   email: string;
