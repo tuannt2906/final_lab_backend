@@ -26,7 +26,7 @@ export class UsersService {
     return false;
   };
   async create(createUserDto: CreateUserDto) {
-    const { name, email, password, phone, address, image } = createUserDto;
+    const { name, email, password, phone } = createUserDto;
     // CheckEmail
     const isExist = await this.isEmailExist(email);
     if (isExist) {
@@ -40,8 +40,6 @@ export class UsersService {
       email,
       password: hashPass, // Sửa lỗi chính tả từ `hassPass` thành `hashPass`
       phone,
-      address,
-      image,
     });
     return {
       _id: user._id,

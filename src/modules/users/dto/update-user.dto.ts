@@ -1,10 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from './create-user.dto';
 import {
   IsMongoId,
   IsNotEmpty,
   IsOptional,
-  IsString,
   Matches,
   MaxLength,
   MinLength,
@@ -28,10 +25,4 @@ export class UpdateUserDto {
     message: 'Phone number must be in the format "+xxxxx"',
   })
   phone: string;
-
-  @IsOptional()
-  address?: string;
-
-  @IsString()
-  image?: string;
 }

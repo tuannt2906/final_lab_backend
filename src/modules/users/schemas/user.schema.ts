@@ -17,12 +17,6 @@ export class User {
   @Prop()
   phone: string;
 
-  @Prop()
-  address: string;
-
-  @Prop()
-  image: string;
-
   @Prop({ default: 'USERS' })
   role: string;
 

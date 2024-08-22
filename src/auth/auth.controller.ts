@@ -3,17 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseGuards,
   Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './passport/local-auth.guard';
-import { JwtAuthGuard } from './passport/jwt-auth.guard';
 import { Public } from '@/customs/customize';
 import { MailerService } from '@nestjs-modules/mailer';
 

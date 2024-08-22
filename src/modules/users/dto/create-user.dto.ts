@@ -32,10 +32,4 @@ export class CreateUserDto {
     message: 'Phone number must be in the format "+xxxxx"',
   })
   phone: string;
-
-  @IsString()
-  address: string;
-
-  @IsString()
-  image: string;
 }
