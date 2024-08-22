@@ -30,10 +30,8 @@ export class UpdateUserDto {
   phone: string;
 
   @IsOptional()
-  @IsString()
-  address: string;
+  address?: string;
 
-  @IsOptional()
   @IsString()
-  image: string;
+  image?: string;
 }

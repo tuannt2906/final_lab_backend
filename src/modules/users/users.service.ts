@@ -34,8 +34,6 @@ export class UsersService {
     }
     // HashPassword
     const hashPass = await HashPass(password);
-    console.log(hashPass);
-    
     // Create User
     const user = await this.userModel.create({
       name,
@@ -56,15 +54,18 @@ export class UsersService {
     if (filter.pageSize) delete filter.pageSize;
     if (!current) current = 1;
     if (!pageSize) pageSize = 10;
-    const totalItems = (await this.userModel.find(filter)).length;
-    const totalPages = Math.ceil(totalItems / pageSize);
     const skip = (current - 1) * pageSize;
-    const results = await this.userModel
-      .find(filter)
-      .limit(pageSize)
-      .skip(skip)
-      .select('-password')
-      .sort(sort as any);
+
+    const [results, totalItems] = await Promise.all([
+      this.userModel
+        .find(filter)
+        .limit(pageSize)
+        .skip(skip)
+        .select('-password')
+        .sort(sort as any),
+      (await this.userModel.find(filter)).length,
+    ]);
+    const totalPages = Math.ceil(totalItems / pageSize);
     return { results, totalPages };
   }
 
@@ -79,7 +80,7 @@ export class UsersService {
   async update(updateUserDto: UpdateUserDto) {
     return await this.userModel.updateOne(
       { _id: updateUserDto._id },
-      { ...updateUserDto },
+      { ...updateUserDto, _id: 'test' },
     );
   }
 
@@ -121,11 +122,11 @@ export class UsersService {
       context: {
         name: user?.name ?? user.email,
         activationCode: codeID,
-      }
-    })
+      },
+    });
 
     return {
-      _id: user._id
-    }
+      _id: user._id,
+    };
   }
 }

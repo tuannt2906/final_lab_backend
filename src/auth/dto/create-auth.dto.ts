@@ -15,7 +15,6 @@ export class CreateAuthDto {
   email: string;
 
   @IsNotEmpty()
-  @IsString()
   @MinLength(8, { message: 'Password must be at least 8 characters long!' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[a-zA-Z\d\W_]{8,}$/, {
     message:

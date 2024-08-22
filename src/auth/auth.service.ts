@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '@/modules/users/users.service';
 import { ComparePass } from '@/helpers/utils';
 import { JwtService } from '@nestjs/jwt';
@@ -17,8 +13,9 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByUser(username);
+    if (!user) return null;
     const isValidPassword = await ComparePass(pass, user.password);
-    if (!user || !isValidPassword) return null;
+    if (!isValidPassword) return null;
     return user;
   }
 
@@ -31,5 +28,5 @@ export class AuthService {
 
   handleRegister = async (registerDto: CreateAuthDto) => {
     return this.usersService.handleRegister(registerDto);
-  }
+  };
 }

@@ -24,9 +24,9 @@ export class AuthController {
     private readonly mailerService: MailerService,
   ) {}
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   @Public()
-  @UseGuards(LocalAuthGuard)
   handleLogin(@Request() req) {
     return this.authService.login(req.user);
   }
@@ -40,7 +40,6 @@ export class AuthController {
   @Get('mail')
   @Public()
   getMail() {
-    console.log(2)
     this.mailerService.sendMail({
       to: 'nguyentuan123.yeah@gmail.com', // list of receivers
       subject: 'Testing Nest MailerModule ✔', // Subject line
