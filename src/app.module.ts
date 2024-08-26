@@ -5,11 +5,12 @@ import { UsersModule } from '@/modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { PassportModule } from '@nestjs/passport';
+import { TransformInterceptor } from './core/transform.interceptor';
 
 @Module({
   imports: [
@@ -60,6 +61,10 @@ import { PassportModule } from '@nestjs/passport';
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
+    }
   ],
 }) 
 export class AppModule {}

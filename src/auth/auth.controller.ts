@@ -9,7 +9,7 @@ import {
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { LocalAuthGuard } from './passport/local-auth.guard';
-import { Public } from '@/customs/customize';
+import { Public, ResponseMessage } from '@/customs/customize';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Controller('auth')
@@ -22,6 +22,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @Public()
+  @ResponseMessage('Fetch login')
   handleLogin(@Request() req) {
     return this.authService.login(req.user);
   }

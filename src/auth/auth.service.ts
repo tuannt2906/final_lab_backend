@@ -3,6 +3,7 @@ import { UsersService } from '@/modules/users/users.service';
 import { ComparePass } from '@/helpers/utils';
 import { JwtService } from '@nestjs/jwt';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import { IsEmail } from 'class-validator';
 
 @Injectable()
 export class AuthService {
@@ -20,8 +21,13 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { sub: user._id, username: user.email };
+    const payload = { username: user.email, sub: user._id };
     return {
+      user: {
+        email: user.email,
+        _id: user._id,
+        name: user.name,
+      },
       access_token: await this.jwtService.signAsync(payload),
     };
   }
