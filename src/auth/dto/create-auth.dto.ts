@@ -21,3 +21,11 @@ export class CreateAuthDto {
   })
   password: string;
 }
+
+export class CodeAuthDto {
+  @IsNotEmpty({ message: 'Must have _id!' })
+  _id: string;
+
+  @IsNotEmpty({ message: 'Must have code!' })
+  code: string;
+}
