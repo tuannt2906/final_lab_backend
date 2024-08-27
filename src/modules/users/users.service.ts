@@ -7,7 +7,11 @@ import { User } from './schemas/user.schema';
 import { HashPass } from '@/helpers/utils';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
-import { CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import {
+  ChangePasswordAuthDto,
+  CodeAuthDto,
+  CreateAuthDto,
+} from '@/auth/dto/create-auth.dto';
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -147,9 +151,84 @@ export class UsersService {
           isActive: true,
         },
       );
+      return { isBeforeCheck };
     } else {
       throw new BadRequestException('Code is invalid/expired!');
     }
-    return { isBeforeCheck };
+  }
+
+  async retryActive(email: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new BadRequestException('Account is not existed!');
+    }
+    if (user.isActive) {
+      throw new BadRequestException('Account has been released!');
+    }
+    //SendEmail And UpdateUser
+    const codeID = uuidv4();
+    await user.updateOne({
+      codeId: codeID,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
+    this.mailerService.sendMail({
+      to: user.email, // list of receivers
+      subject: 'Active your account', // Subject line
+      text: 'welcome', // plaintext body
+      template: 'register.hbs',
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: codeID,
+      },
+    });
+    return { _id: user._id };
+  }
+
+  async retryPassword(email: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new BadRequestException('Account is not existed!');
+    }
+
+    //SendEmail And UpdateUser
+    const codeID = uuidv4();
+    await user.updateOne({
+      codeId: codeID,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
+    this.mailerService.sendMail({
+      to: user.email, // list of receivers
+      subject: 'Update your password', // Subject line
+      text: 'welcome', // plaintext body
+      template: 'register.hbs',
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: codeID,
+      },
+    });
+    return { _id: user._id, email: user.email };
+  }
+
+  async changePassword(data: ChangePasswordAuthDto) {
+    if (data.confirmPassword !== data.password) {
+      throw new BadRequestException(
+        'Password and Confirm Password are different to each other!',
+      );
+    }
+    const user = await this.userModel.findOne({ email: data.email });
+    if (!user) {
+      throw new BadRequestException('Account is not existed!');
+    }
+
+    //Check expired code
+    const isBeforeCheck = dayjs().isBefore(user.codeExpired);
+    if (isBeforeCheck) {
+      //Valid -> update password
+      const newPassword = await HashPass(data.password);
+      await user.updateOne({ password: newPassword });
+      return { isBeforeCheck };
+    } else {
+      throw new BadRequestException('Code is invalid/expired!');
+    }
   }
 }
