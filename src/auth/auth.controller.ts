@@ -23,9 +23,9 @@ export class AuthController {
     private readonly mailerService: MailerService,
   ) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
   @Public()
+  @UseGuards(LocalAuthGuard)
   @ResponseMessage('Fetch login')
   handleLogin(@Request() req) {
     return this.authService.login(req.user);
